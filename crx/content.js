@@ -1,6 +1,16 @@
 var payload = function(){
   const sort_stays_by_final_price = function() {
-    let stays = [...document.querySelectorAll('div._fhph4u > div._8ssblpx')]
+    const stays = []
+
+    document.querySelectorAll('div._fhph4u').forEach(el => {
+      const obj = {
+        "parent": el,
+        "stays":  [...el.querySelectorAll(':scope > div._8ssblpx')]
+      }
+
+      if (obj.stays.length)
+        stays.push(obj)
+    })
 
     // sanity check
     if (!stays.length) return
@@ -26,9 +36,7 @@ var payload = function(){
       return (a_price < b_price)? -1 : (a_price === b_price)? 0 : 1
     }
 
-    const update_dom = function() {
-      const parent = stays[0].parentNode
-
+    const update_dom = function({parent, stays}) {
       // empty
       while (parent.hasChildNodes()) {
         parent.removeChild(
@@ -40,10 +48,18 @@ var payload = function(){
       stays.forEach(parent.appendChild.bind(parent))
     }
 
-    stays.sort(stays_compare)
-    console.log(stays.map(get_stay_price))
+    const update_stays = function() {
+      stays.forEach(obj => {
+        if (obj.stays.length) {
+          obj.stays.sort(stays_compare)
+          //console.log(obj.stays.map(get_stay_price))
 
-    update_dom()
+          update_dom(obj)
+        }
+      })
+    }
+
+    update_stays()
   }
 
   const inject_button = function() {

@@ -1,6 +1,6 @@
 {
   "name": "Airbnb Price Sort",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Enable sorting search results by final price on Airbnb website",
   "content_scripts": [{
     "matches": [
