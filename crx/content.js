@@ -46,11 +46,11 @@ var payload = function(){
     update_dom()
   }
 
-  let is_button_injected = false
-
   const inject_button = function() {
+    const button_id = 'airbnb_pricesort'
+
     // debounce
-    if (is_button_injected) return true
+    if (document.getElementById(button_id)) return true
 
     // only inject button on search results pages for "stays"
     if (location.pathname.indexOf('/s/') !== 0)  return false
@@ -63,12 +63,11 @@ var payload = function(){
 
     const button = document.createElement('button')
     button.classList.add('_1jl6sxj4')
+    button.setAttribute('id', button_id)
     button.innerText = 'Sort by Final Price'
     button.addEventListener('click', sort_stays_by_final_price, false)
 
     menu.appendChild(button)
-
-    is_button_injected = true
     return true
   }
 
@@ -100,7 +99,6 @@ var payload = function(){
     // hook into History API, which is called when search form is submit
     const rs = history.replaceState
     history.replaceState = function() {
-      is_button_injected = false
       run_timer()
 
       rs.apply(this, arguments)
