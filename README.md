@@ -1,6 +1,6 @@
 ### [Airbnb Price Sort](https://github.com/warren-bank/crx-airbnb-pricesort)
 
-Chrome extension for Airbnb website to enable sorting search results by final price
+Chrome extension for Airbnb website to enable sorting search results for "stays" by final price
 
 #### UI:
 
