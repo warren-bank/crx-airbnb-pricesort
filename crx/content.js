@@ -46,7 +46,16 @@ var payload = function(){
     update_dom()
   }
 
+  let is_button_injected = false
+
   const inject_button = function() {
+    // debounce
+    if (is_button_injected) return true
+
+    // only inject button on search results pages for "stays"
+    if (location.pathname.indexOf('/s/') !== 0)  return false
+    if (location.href.indexOf('/homes?') === -1) return false
+
     const menu = document.querySelector('div._ouyf9j > div._m7x2lq > div > div._i8vcof')
 
     // sanity check
@@ -58,27 +67,47 @@ var payload = function(){
     button.addEventListener('click', sort_stays_by_final_price, false)
 
     menu.appendChild(button)
+
+    is_button_injected = true
     return true
   }
 
-  let timer = null
-  let counter = 0
-  const max_tries = 20   // stop polling after (500ms)(20) = 10,000 ms = 10 seconds
-  const timer_delay = 500
-  const timer_cb  = function() {
-    const ok = inject_button()
-    if (ok) return
+  const run_timer = function() {
+    let timer = null
+    let counter = 0
+    const max_tries = 20   // stop polling after (500ms)(20) = 10,000 ms = 10 seconds
+    const timer_delay = 500
 
-    counter++
-    if (counter < max_tries)
-      set_timer()
-  }
-  const set_timer = function() {
-    timer = setTimeout(timer_cb, timer_delay)
-  }
+    const timer_cb  = function() {
+      const ok = inject_button()
+      if (ok) return
 
-  if (location.pathname.indexOf('/s/') === 0)  // only run on pages with search results
+      counter++
+      if (counter < max_tries)
+        set_timer()
+    }
+
+    const set_timer = function() {
+      timer = setTimeout(timer_cb, timer_delay)
+    }
+
     set_timer()
+  }
+
+  const init_page = function() {
+    run_timer()
+
+    // hook into History API, which is called when search form is submit
+    const rs = history.replaceState
+    history.replaceState = function() {
+      is_button_injected = false
+      run_timer()
+
+      rs.apply(this, arguments)
+    }
+  }
+
+  init_page()
 }
 
 var get_hash_code = function(str){
